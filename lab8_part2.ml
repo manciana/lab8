@@ -93,43 +93,38 @@ will act as an absrtaction barrier to prevent the extra functions from
 leaking out of the module.)
 ......................................................................*)
 
-module MakeStack (Element: SERIALIZE) : (STACK with type element = Element.t) =
-  struct
-    exception Empty
 
-    type element = Element.t
-    type stack = element list
+module MakeStack (Element: SERIALIZE) : (STACK with type element = Element.t) =  
+struct    
 
-    let empty : stack = []
+exception Empty    
+type element = Element.t    
 
-    let push (el : element) (s : stack) : stack =
-      el :: s
+type stack = element list    
 
-    let pop_helper (s : stack) : (element * stack) =
-    match s with
-            | [] -> raise Empty      
-            | h :: t -> (h, t)
+let empty : stack = []    
 
-    let top (s : stack) : element =
-      fst (pop_helper s)
+let push (el : element) (s : stack) : stack =      
+  el :: s    let pop_helper (s : stack) : (element * stack) =      
+  match s with      
+  | [] -> raise Empty      
+  | h :: t -> (h, t)    
+  let top (s : stack) : element =      
+fst (pop_helper s)
 
-    let pop (s : stack) : stack =
-      snd (pop_helper s)
+ let pop (s : stack) : stack =      
+  snd (pop_helper s)    
 
-    let map (f : element -> element) (s : stack) : stack =
-      List.map
+ let map : (element -> element) -> stack -> stack =      
+  List.map    
 
-    let filter (f : element -> bool) (s : stack) : stack =
-      List.filter
-
-    let fold_left (f : 'a -> element -> 'a) (init : 'a) (s : stack) : 'a =
-      List.fold_left
-
-    let serialize (s : stack) : string =
-      let string_join x y = Element.serialize y                  
-      ^ (if x <> "" then ":" ^ x else "") in      
-      fold_left string_join "" s
-  end ;;
+ let filter : (element -> bool) -> stack -> stack =      
+  List.filter    
+ let fold_left : ('a -> element -> 'a) -> 'a -> stack -> 'a =      
+ List.fold_left    let serialize (s : stack) : string =      
+ let string_join x y = Element.serialize y                  
+ ^ (if x <> "" then ":" ^ x else "") in      
+ fold_left string_join "" s  end ;;
 
 (*......................................................................
 Exercise 1B: Now, make a module `IntStack` by applying the functor
